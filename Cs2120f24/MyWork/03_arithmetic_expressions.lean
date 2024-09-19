@@ -21,9 +21,13 @@ inductive ArithExpr : Type
 | binOp (op : ArithBinOp) (e1 e2 : ArithExpr)
 deriving Repr
 
-def nat.fac : Nat → Nat
+def fac : Nat → Nat
 | 0 => 1
-| n+1 => (n+1) * nat.fac n
+| n+1 => (n+1) * fac n
+def sum_n: Nat → Nat
+| 0 => 0
+| n+1 => (n+1) + sum_n n
+#eval sum_n 10
 -- concrete syntax
 notation " { " v " } " => ArithExpr.var v
 notation " [ " n " ] " => ArithExpr.lit n
@@ -34,7 +38,7 @@ notation e1 " * " e2 => ArithExpr.binOp ArithBinOp.mul e1 e2
 
 -- Semantics (incomplete, to be finished in homework)
 def evalUnOp : ArithUnOp → (Nat → Nat)
-| (ArithUnOp.fac) => nat.fac
+| (ArithUnOp.fac) => fac
 def evalBinOp : ArithBinOp → (Nat → Nat → Nat)
 | ArithBinOp.add => Nat.add
 | ArithBinOp.sub => Nat.sub
