@@ -1,65 +1,98 @@
-namespace cs2120f24.arith
+namespace cs2120f24.natArithmetic
 
 /-!
 # Domain: natural number arithmetic
 
-Natural number arithmetic is deeply familiar to everyone here.
+Everyone's familar with natural number arithmetic in the abstract.
+
 It comprises:
 
-- the natural numbers (the set of whole numbers from zero up)
-- operations taking and returning natural numbers
-- certain new axioms, especially *induction*
+- the set of natural numbers (whole numbers from zero up)
+- operations taking and returning natural numbers (such as increment and add)
+- predicate functions taking natural numbers and returning Booleans (e.g., "n less than m")
+- *induction*: for defining functions that answer correctly for infinities of cases!
 
-We'll return to induction in a bit, but for now the plan is as
-follows:
 
-- The Nat type has terms/values that correspond to natural numbers
-- We define functions that implement standard arithmetic operations
-- We get a powerful new tool for building such functions: induction
-
-We'll now address each of these issues in turn.
+Induction emerges as a major theme. How do you define a type with an infinite
+number of terms, *which is what's needed if those terms are to represent the
+natural numbers (all of them). How do you define a function that can given a
+different answer for each of an infinite number of natural number arguments?
+The answer in both cases is induction, or inductive definitions: these are
+definitions of types of things, where bigger things are derived from smallers
+ones of the same type, and where answers for bigger arguments are derived from
+answers for smaller arguments.
 -/
 
 
 /-!
 ## The Nat Type
 
-Here's the entire mathematical definition of the natural numbers in
-Lean.
+We won't repeat the theory of the natural numbers. Rather, let's look
+at the definition of the Nat type, the terms of which we mean to use to
+represent natural numbers. We need an infinity of terms. We get that with
+the two constructors of the Nat data type.
 
 inductive Nat : Type
-| zero
-| succ (n' : Nat)
+| zero : Nat
+| succ (n' : Nat) : Nat
+
+Pick any natural number, n. To represent it using this data type, apply
+the Nat.succ constructor n times to Nat.zero. That will give you the term,
+(Nat.succ ( ... (Nat.succ Nat.zero))), with exactly n "applications" of
+the Nat.succ constructor to Nat.zero.
+
+The set of terms of type Nat is thus the set of terms that is *closed*
+under any finite number of applications of the available constructors.
+You can pick any n, no matter how large, and the terms that we will use
+to represent it will be a *finite* sequence of "n" Nat.succ applications
+to Nat.zero. Given any term of this type, you can always apply Nat.succ
+to represent an even bigger natural number.
+
+The ability to use inductive definitions is given to us by the induction
+axioms that come with every single inductive type definition. Every type
+has induction axioms; they always give you machines to build functions
+that can consume *any* value of a type, even if there's an infinity of
+them; and they always work by starting from base values and answers and
+then iteratively applying a step function that you provide to compute an
+answer for any argument value (here, Nat, but this principle extends to
+all inductive data types).
 -/
 
-#check Nat    -- Nat is a Type
-#print Nat    -- Here are its constructors
+
+
+#check Nat      -- Nat is a Type
+#print Nat      -- Here are its constructors
+#check Nat.zero -- The smallest term of this type
+#check Nat.succ Nat.zero  -- The second smallest
 
 /-!
-## Constructors are for Constructing, for Introducing, Values of a Type
+## Constructors are for Constructing/Introducing New Values of a Type
 
-The constructors of a type are its introduction rules. Each provides a way to
-construct a new term of the given type by applying the constructor to argument
-values of the specified types. Here there are only two constructors, and one of
-them (succ) requires another as an argument. The only one we can have at first
-then is Nat.zero. Call that 0. The only other thing you can do is apply succ to
-that, yielding (succ 0). This term is *also of type Nat* so we can apply succ
-again, to construct succ (succ 0); and so on essentially forever.
+The constructors of a type are its introduction rules. Each one define a set of
+terms--those that be formed by applying the constructor to *any* values of its
+argument types, that Lean is then instructed to then accept as being terms of
+the type that the constructor belongs to.
 
-- with these two constructors one can build succ terms of any length, n; we represent n as the term of that length
-- disjointness of constructors: Different constructors yield unequal values. zero is not the successor of any number.
-- injectivity of constructors: Different arguments yield unequal values. no number is the success of distinct numbers.
+The Nat type, for example, has two constructors. The first, Nat.zero, takes no
+arguments and this defines a single constant term of type Nat. The seccond, the
+Nat.succ constructor takes one argument, another terms of type Nat. If we call
+that term, n', then the term, (Nat.succ n'), is accepted as also being a term of
+type Nat. Note carefully that if a Nat value is not zero then it can only have
+been constructed by Nat.succ applied to some smaller Nat.
 
-- English: zero is a (term of type) Nat; and if n' is any Nat, then so is (succ n')
-- With these two constructors one can build succ terms of any length, n
-- we represent the natural number n as the term of type Nat of that length
-- zero is not the successor of any number by "disjointness of constructors"
-- no number is the successor of two distinct numbers by "injectivity of constructors"
+- with these two constructors one can build Nat terms of any finite length, n
+- we can represent any natural numnber n as a term of type nat with n Nat.succ applications to Nat.zero
+- The set of terms of the Nat type is the set that can be "*finitely* generated" using these constructors
+- Different constructors yield unequal terms (disjointness): zero is not the successor of any number
+- Different constructor arguments yield unequal terms (injectivity): no n is the successor of different numbers
+- Combined with the fundamental properties of inductive types we have terms that simulate natural numbers
+- What we have technically speaking is a representation (Nat) of Peano Arithmetic, named after G. Peano
+- As any Nat term is of finite size, recursions on smaller Nat values always terminate in finite "time"
 -/
 
--- See examples in Main.lean
+-- See more examples in Main.lean
 /-!
-## Nat Eliminators: Case Analysis by Pattern Matching
+## How to Use Nats: Elimination by Case Analysis by Pattern Matching
 
 The analysis distinguishes between Nat.zero and a term in which Nat.succ
 was applied to an argument: in this case a one-smaller term of type Nat.
@@ -117,7 +150,7 @@ def poof : Nat → Bool
 
 
 /-!
-## More Arithmetic Operations
+## Arithmetic Operations
 
 ### Unary
 
@@ -173,98 +206,13 @@ as saying, if n = 0 return 0 else return n-1, which
 is n with the leading "succ" removed.
 -/
 
-/-!
-Now we turn to defining nore interesting and complex
-operations involving natural numbers. The first will
-be the unary *factorial* operator.
-
-In English one might explain that the factorial of n
-is the product of all the natural numbers from 1 to
-n. But that leaves out the case where n is 0. It's a
-bit of a muddle.
-
-Let's turn around our entire perspective and ask how
-would be answer the question, what's the factorial of
-n. Instead we'll start by giving a literal answer for
-the case where n is 0: namely, 0! = 1.
--/
-
-def fac_base := 1
-
-/-!
-Now here comes the cool bit. *Suppose* (assume, dream)
-that we know both a natural number value, n', and the
-factorial of n'; can we then easily compute the value
-of (n' + 1)! In other words, can you implement it?
--/
-
-def fac_step (n' fac_n' : Nat): Nat := fac_n' * (n' + 1)
--- notice c-like notation, named arguments left of :
-
-/-!
-Now if we want the answer to the question, what is 5!,
-for example, we can build it in steps. First use fac_base
-to get 0! = 1, then apply fac_step as many times as needed
-to get to n! for whatever n you've got. Each step creates
-the result for fact n' that you need to feed to fac n'+ 1.
--/
-
-def fac_0 := fac_base
-def fac_1 := fac_step 0 fac_0
-def fac_2 := fac_step 1 fac_1
-def fac_3 := fac_step 2 fac_2
-def fac_4 := fac_step 3 fac_3
-def fac_5 := fac_step 4 fac_4
-def fac_6 := fac_step 5 fac_5
-
-#eval fac_5   -- expect 120
-
-/-!
-In each "step" you can assume you know n' and fac_n' and
-are responsible for returning fac_n' * (n' + 1). In other
-words, starting from the base and iterating the application
-of step n times yields the value of the function for n.
-
-You can see clearly that we can in principle construct the
-value of n! for any n no matter how high in exactly the same
-way. That said, we wouldn't want to have to write all that
-code. We want a *single* function that does the right thing:
-for any n, compute and return n!
-
-The almost magical solution is the "induction function" for
-natural numbers. In Lean its called Nat.rec. You come up with
-the base and step function definitions. It the combines them
-into the desired function for computing n! for any n, in effect
-by starting with the base value then applying the step function
-n times.
--/
-
-def fac' : Nat → Nat :=
-  Nat.rec fac_base fac_step
-
-
-#eval fac' 5   -- whoa!
-
-/-!
-Lean provides nice for writing functions
-in this way, essentially with a solution
-for each "case" of the structure of the
-argument *and* with the assumption the
-function value for one less tha argument
-is already know (or equivalently, and in
-practice, it can be computed on demand.
--/
 def fac : Nat → Nat
 | 0 => 1
 | (n' + 1) => (n' + 1) * fac n'
 
 
--- It works
-#eval fac' 5   -- expect 120
-
-
 /-!
-Addition: by induction on the second argument
+### Binary Operations
 -/
 
 def add : Nat → Nat → Nat
@@ -297,8 +245,13 @@ def mul : Nat → Nat → Nat
 | n, (Nat.succ m') => add n (mul n m')
 -- effect is to iterate addition of n to zero m times
 
+-- exponentiation
+def exp : Nat → Nat → Nat
+| n, 0 => 1
+| n, (m' + 1) => n * exp n m'
+
 /-!
-### Binary Relations (as Boolean Predicate Functions)
+### Properties and Relations (Predicate Functions)
 
 You're already familiar with binary relations such as
 less than or equal to over the natural numbers. No one
@@ -312,10 +265,20 @@ We implement predicate functions that return true
   - le n m      (true for all and only pairs where n ≤ m)
 -/
 
+
+/-!
+#### A property (unary predicate)
+-/
+
 -- does n have the property of being equal to zero?
 def eq_zero : Nat → Bool
 | Nat.zero => true
 | _ => false
+
+
+/-!
+#### Binary relations (binary predicates)
+-/
 
 -- are n and m equal?
 def eq : Nat → Nat → Bool
@@ -359,8 +322,24 @@ you expect. Here are some basic expressions, using Lean4 and
 its mathlib.
 -/
 
+end cs2120f24.natArithmetic
+
+-- We're back to using Lean's definitions
+
+/-!
+Lean provides all of the usual arithmetic operations.
+In abstract syntax, they're Nat.add (the add function
+defined in the Nat namespace), Nat.mul, Nat.sub, etc.
+Lean also provides standard notations for all of the
+usual arithmetic operators
+-/
 #eval 4 + 5 * 6   -- evaluated as 4 + (5 * 6) due to precedence
+
+#check Nat.add 4 5 * 6
+
 #eval 2^10        -- remember this forever: 2^10 is about 1000
+
+-- relations
 #eval 4 ≤ 5
 #eval 5 ≤ 5
 #eval 6 ≤ 5
@@ -368,11 +347,12 @@ its mathlib.
 /-
 Now that we have the domain of natural number arithmetic set up,
 it's time to turn to building a new *expression language* of our
-own as a second example of a formal language with a syntax and a
-semantics, notions of models and counterexaples, and so on. And in
-each of these areas, we'll see the same tricks we used when we
-were formalizing propositional logic: variables, interpretations,
-a syntax with literal, variable, and operator expressions
+own as a second example of a formal language with a syntax and an
+operational semantics (an expression evaluation function). We'll
+borrow hevily from our specification of the syntax and semantics
+of propositinal logic. Instead of Boolean variables expressions,
+we'll have natural number-valued variable expressions. Instead of
+Boolean literals, we'll have Nat literal expressions. Instead of
+syntactic expressions with ∧ and ∨ symbols, the operators will be
+the likes of +, -, *.
 -/
-
-end cs2120f24.arith
