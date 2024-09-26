@@ -296,8 +296,19 @@ def mul : Nat → Nat → Nat
 -- reduce multiplication to addition, already defined
 | n, (Nat.succ m') => add n (mul n m')
 -- effect is to iterate addition of n to zero m times
-
+def exp: Nat → Nat → Nat
+| _, 0 => 1
+| n, (Nat.succ m') => mul n (exp n m')
+def tetration: Nat → Nat → Nat
+| _, 0 => 1
+| n, (Nat.succ m') => exp n (tetration n m')
+def sub': Nat → Nat → Nat
+| n, 0 => n
+| 0, m => 0
+| (Nat.succ n'), (Nat.succ m') => sub' n' m'
 /-!
+2^(2^(2^(2^(2)))) = 2^(G 2 4) = 2 ^ 2 ^ (G 2 3)
+
 ### Binary Relations (as Boolean Predicate Functions)
 
 You're already familiar with binary relations such as
@@ -327,7 +338,7 @@ def eq : Nat → Nat → Bool
 -- is n ≤ m
 def le : Nat → Nat → Bool
 | 0, _ => true
-| n, 0 => false
+| n' + 1, 0 => false
 | (Nat.succ n'), (Nat.succ m') => le n' m'
 
 /-
