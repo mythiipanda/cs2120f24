@@ -1,0 +1,5 @@
+Given proposition in propositional logic, express in English
+Formalize it in lean
+give examples of formal interpretations and model check them
+write a truth table for proposition
+find counterexample and explain why it is 
