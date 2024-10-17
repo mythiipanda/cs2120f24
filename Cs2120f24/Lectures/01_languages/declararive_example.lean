@@ -17,7 +17,6 @@ squared equals x and out is non-negative.
 
 def sqrt (x : ℚ) (_ : x ≥ (0:ℚ)) :=
   { out : ℝ |  (out * out = x) ∧ (x ≥ 0) }  -- bug!
-
 /-
 Logical Reasoning (optional, no need to read this)
 

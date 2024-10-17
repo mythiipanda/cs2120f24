@@ -3,3 +3,9 @@ Formalize it in lean
 give examples of formal interpretations and model check them
 write a truth table for proposition
 find counterexample and explain why it is 
+if you want to know that not R is true, then it suffices to say that not R is false
+then in additon if we know that r is true, then in conclusion p is true
+
+R and P are equivalent
+if somehow were other (false) then you can get a proof of anything  you want
+the impossible cant happpen

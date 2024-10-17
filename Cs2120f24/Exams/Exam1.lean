@@ -51,3 +51,18 @@ include abstract syntax (including literal, variable, and operator expressions),
 concrete syntax concepts, interpretations, and the procedure for evaluating the
 truth of an expression given an interpretation (semantic evaluation).
 -/
+inductive MySyntax : Type
+| Zero
+| Succ (s: MySyntax)
+| Add (s1 s2: MySyntax)
+open MySyntax
+def v0 : MySyntax := Zero
+def v1 : MySyntax := Succ Zero
+def v2 : MySyntax := Succ (Succ Zero)
+def v3 : MySyntax := Succ v2
+def v4 : MySyntax := Add v2 v3
+def semantics : MySyntax → Nat
+| Zero => 0
+| Succ s => 1 + semantics s
+| MySyntax.Add s1 s2 => semantics s1 + semantics s2
+#eval! semantics v4

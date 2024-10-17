@@ -37,6 +37,9 @@ out for now so as not to introduce conflicting definitions.
 def P : PLExpr := PLExpr.var_expr v₀
 def Q : PLExpr := { v₁ }  -- our notation for var_expr constructor
 def R : PLExpr := { v₂ }
+def Z : PLExpr := PLExpr.lit_expr true
+def Y : PLExpr := PLExpr.lit_expr false
+def P_or_Q : PLExpr := PLExpr.bin_op_expr BinOp.or P Q
 
 /-
 Now that you have three variable expressions to work with,
@@ -60,6 +63,9 @@ these abstract sybtax repreesentations.
 -/
 def P_and_Q_concrete := P ∧ Q
 #reduce P_and_Q_concrete
+def P_or_Q_concrete := (P ∨ Q)
+def P_imp_Q_concrete := (P ⇒ Q)
+#reduce P_or_Q_concrete
 /-!
 (bin_op_expr BinOp.and) -- this is ∧
   (var_expr { index := 0 }) -- the first conjunct, P
@@ -105,7 +111,7 @@ the extent that it determines the number of variables in
 one.
 -/
 
-def i := InterpFromRowCols 2 2
+def i := InterpFromRowCols 3 2
 #check i
 
 /-!
@@ -128,8 +134,12 @@ of the variables in the expression.
 -/
 
 def e := P_and_Q_concrete
-
+def f := P_or_Q_concrete
+def ex1 := P ⇒ (Q ∨ ¬ Q)
 #eval! evalPLExpr e i
+#eval! evalPLExpr f i
+#eval! is_valid ex1
+
 
 /-!
 Given the semantic meanings (Boolean functions) that
@@ -189,6 +199,8 @@ expression e for each interpretation in a given list of them.
 -/
 
 #eval! truthTableOutputs e
+#eval! truthTableOutputs f
+#eval! truthTableOutputs P_imp_Q_concrete
 
 /-
 We see that e (go back and see how we defined it) is actually
