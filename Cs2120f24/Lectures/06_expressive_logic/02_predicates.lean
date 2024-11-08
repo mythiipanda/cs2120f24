@@ -130,10 +130,10 @@ open Ev
 def pfZeroEv : Ev 0 := pfZero
 def pfTwoEv : Ev 2 := pfEvPlus2 0 pfZeroEv
 def pfFourEv : Ev 4 := pfEvPlus2 2 pfTwoEv
-def pfSixEv : Ev 6 :=
-  pfEvPlus2 4
-    (pfEvPlus2 2
-      (pfEvPlus2 0 pfZeroEv))
+-- def pfSixEv : Ev 6 :=
+--   pfEvPlus2 4
+--     (pfEvPlus2 2
+--       (pfEvPlus2 0 pfZeroEv))
 /-!
 And here are some proofs of evenness
 -/
@@ -214,7 +214,6 @@ def bothFromCville : Type :=
 -- we can construct a proof of it using MyAnd.intro
 def pfBothFromCville : bothFromCville :=
   MyAnd.intro (cvilleBirthCert Kevin) (cvilleUtilityBill Carter)
-
 -- and we can of course also implement elim rules
 
 def myAnd_elim_left : (P : Type) → (Q : Type) → (MyAnd P Q) → P

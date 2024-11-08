@@ -43,7 +43,7 @@ here as having no proofs at all.
 axiom P : Prop              -- assume P is some proposition
 axiom Q : Prop              -- assume Q is some proposition
 inductive R : Prop where    -- define R as a proposition with no proofs
-
+--little p is a type of big P
 -- Proofs
 axiom p : P                 -- assume p is proof of P
 axiom q : Q                 -- assume q is a proof of Q

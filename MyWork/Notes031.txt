@@ -1,0 +1,4 @@
+Polymorphic Type builder is a function that takes types as arguments and gives a new type
+Generic types
+list is a type builder
+and = type builder, get a type prop
