@@ -126,8 +126,8 @@ proof development to complete this simple proof. We give you the
 or introduction on the right to start.
 -/
 
-example : small 1 := (Or.inr (_))
-
+example : small 1 := (Or.inr (Or.inl rfl))
+example : small 3 := Or.inr (Or.inr (Or.inr (Or.inl rfl)))
 /-!
 ### Set Theory Notation
 

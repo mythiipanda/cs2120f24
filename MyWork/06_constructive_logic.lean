@@ -159,8 +159,18 @@ Iff.intro
   -- backward direction: ((P → Q) ∧ (Q → P)) → (P ↔ Q)
   (fun (pq_qp : (P → Q) ∧ (Q → P)) => Iff.intro pq_qp.left pq_qp.right)
 
--- def implication     : (P → Q) ↔ (¬P ∨ Q) :=
--- no constructive proof
+def implication     : (P → Q) ↔ (¬P ∨ Q) :=
+Iff.intro
+  (fun (h : P → Q) =>
+    (Or.inr P))
+  (fun (h : (¬P ∨ Q)) =>
+    (fun (p : P) =>
+      Or.elim
+      h
+      (fun (k : ¬P) => False.elim (k p))
+      (fun q => q)
+    )
+  )
 
 def exportation     : ((P ∧ Q) → R) ↔ (P → Q → R) :=
 Iff.intro
