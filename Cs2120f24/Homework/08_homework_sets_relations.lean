@@ -174,18 +174,27 @@ By the definition of equivalence, what we need to show is that the
 relation is reflexive, symmetric, and transitive.
 -/
 
--- Destructure first ∧
 And.intro
-  -- Left: prove (congruentModN n) is reflexive
+  -- It's reflexive
   (
     _
   )
-  -- Right: Destructure second ∧
+
   (
     And.intro
-      -- Left: Prove (congruentModN n) is symmetric
-      (_)
+    -- It's symmetric
+    (_)
 
-      -- Prove (congruentModN n) is transitive
-      (_)
+    -- It's transitive
+    (_)
   )
+
+/-
+B. Formally state and prove that congruenceModN for any
+given n
+We define congruence mod n as a binary relation
+on the natural numbers  m and n are congruent mod k
+
+Formally state and prove the proposition that
+
+-/
